@@ -3,7 +3,7 @@
 // Refer to the license.txt file included.
 
 #include "citra_qt/config.h"
-#include "citra_qt/configure_dialog.h"
+#include "citra_qt/configuration/configure_dialog.h"
 #include "core/settings.h"
 #include "ui_configure.h"
 

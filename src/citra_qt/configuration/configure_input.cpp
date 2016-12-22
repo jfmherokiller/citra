@@ -6,7 +6,7 @@
 #include <utility>
 #include <QTimer>
 #include "citra_qt/config.h"
-#include "citra_qt/configure_input.h"
+#include "citra_qt/configuration/configure_input.h"
 
 static QString getKeyName(Qt::Key key_code) {
     switch (key_code) {
