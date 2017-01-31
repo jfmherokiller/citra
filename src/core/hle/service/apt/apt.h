@@ -70,35 +70,46 @@ enum class SignalType : u32 {
 
 /// App Id's used by APT functions
 enum class AppletId : u32 {
-    HomeMenu = 0x101,
-    AlternateMenu = 0x103,
-    Camera = 0x110,
-    FriendsList = 0x112,
-    GameNotes = 0x113,
-    InternetBrowser = 0x114,
-    InstructionManual = 0x115,
-    Notifications = 0x116,
-    Miiverse = 0x117,
-    MiiversePost = 0x118,
-    AmiiboSettings = 0x119,
-    SoftwareKeyboard1 = 0x201,
-    Ed1 = 0x202,
-    PnoteApp = 0x204,
-    SnoteApp = 0x205,
-    Error = 0x206,
-    Mint = 0x207,
-    Extrapad = 0x208,
-    Memolib = 0x209,
-    Application = 0x300,
-    AnyLibraryApplet = 0x400,
-    SoftwareKeyboard2 = 0x401,
-    Ed2 = 0x402,
-    PnoteApp2 = 0x404,
-    SnoteApp2 = 0x405,
-    Error2 = 0x406,
-    Mint2 = 0x407,
-    Extrapad2 = 0x408,
-    Memolib2 = 0x409,
+
+    HomeMenu = 0x101,          ///< Home Menu (menu)
+    AlternateMenu = 0x103,     ///< Alternate Menu
+    Camera = 0x110,            ///< Camera applet (CtrApp)
+    FriendsList = 0x112,       ///< Friends List applet (friend)
+    GameNotes = 0x113,         ///< Game Notes applet (Cherry)
+    InternetBrowser = 0x114,   ///< Internet Browser (spider/SKATER)
+    InstructionManual = 0x115, ///< Instruction Manual applet
+    Notifications = 0x116,     ///< Notifications applet (newslist)
+    Miiverse = 0x117,          ///< Miiverse applet (olv)
+    MiiversePost = 0x118,      ///< Miiverse posting applet (solv3)
+    AmiiboSettings = 0x119,    ///< Amiibo settings (cabinet)
+    SoftwareKeyboard1 = 0x201, ///< Software Keyboard (swkbd)
+    Ed1 = 0x202,               ///< Mii Selector (appletEd)
+    PnoteApp = 0x204,          ///< Photo Selector (PNOTE_AP)
+    SnoteApp = 0x205,          ///< Sound Selector (SNOTE_AP)
+    Error = 0x206,             ///< Error Display (error)
+    Mint = 0x207,              ///< eShop applet (mint)
+    Extrapad = 0x208,          ///< Circle Pad Pro Calibrator (extrapad)
+    Memolib = 0x209,           ///< Notepad (memolib)
+    Application = 0x300,       ///< Current Running Application
+    Tiger = 0x301,             ///< eShop (tiger)
+    AnyLibraryApplet = 0x400,  ///< Currently Running Library Applet
+    SoftwareKeyboard2 = 0x401, ///< Software Keyboard (swkbd)
+    Ed2 = 0x402,               ///< Mii Selector (appletEd)
+    PnoteApp2 = 0x404,         ///< Photo Selector (PNOTE_AP)
+    SnoteApp2 = 0x405,         ///< Sound Selector (SNOTE_AP)
+    Error2 = 0x406,            ///< Error Display (error)
+    Mint2 = 0x407,             ///< eShop applet (mint)
+    Extrapad2 = 0x408,         ///< Circle Pad Pro Calibrator (extrapad)
+    Memolib2 = 0x409,          ///< Notepad (memolib)
+    DevApplet1 = 0xF10,        ///< ProgramID: 0004003000008900.
+    DevApplet2 = 0xF11,        ///< ProgramID: 000400000FFFFD00.
+    DevApplet3 = 0xF12,        ///< ProgramID: 000400000FFFFC00.
+    DevApplet4 = 0xF13,        ///< ProgramID: 000400000FFFFB00.
+    DevApplet5 = 0xF14,        ///< ProgramID: 000400000FFFF900.
+    DevApplet6 = 0xF15,        ///< ProgramID: 000400000FFFF800.
+    DevApplet7 = 0xF16,        ///< ProgramID: 000400000FFFF700.
+    DevApplet8 = 0xF17,        ///< ProgramID: 000400000FFFF600.
+    DevApplet9 = 0xF18,        ///< ProgramID: 000400000FFFF500.
 };
 
 enum class StartupArgumentType : u32 {
@@ -265,7 +276,7 @@ void InquireNotification(Service::Interface* self);
  * Outputs:
  *     0 : Return Header
  *     1 : Result of function, 0 on success, otherwise error code
-*/
+ */
 void SendParameter(Service::Interface* self);
 
 /**
@@ -359,7 +370,7 @@ void PrepareToStartApplication(Service::Interface* self);
  * Outputs:
  *     0 : Return Header
  *     1 : Result of function, 0 on success, otherwise error code
-*/
+ */
 void StartApplication(Service::Interface* self);
 
 /**
