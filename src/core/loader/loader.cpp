@@ -8,6 +8,7 @@
 #include "common/string_util.h"
 #include "core/hle/kernel/process.h"
 #include "core/loader/3dsx.h"
+#include "core/loader/cia.h"
 #include "core/loader/elf.h"
 #include "core/loader/ncch.h"
 
@@ -113,8 +114,8 @@ static std::unique_ptr<AppLoader> GetFileLoader(FileUtil::IOFile&& file, FileTyp
     // NCCH/NCSD container formats.
     case FileType::CXI:
     case FileType::CCI:
+    case FileType::CIA:
         return std::make_unique<AppLoader_NCCH>(std::move(file), filepath);
-
     default:
         return nullptr;
     }

@@ -107,6 +107,10 @@ static bool LZSS_Decompress(const u8* compressed, u32 compressed_size, u8* decom
 
 FileType AppLoader_NCCH::IdentifyType(FileUtil::IOFile& file) {
     u32 magic;
+    file.Seek(0, SEEK_SET);
+    file.ReadBytes(&magic, 4);
+    if (0x2020 == magic)
+        return FileType::CIA;
     file.Seek(0x100, SEEK_SET);
     if (1 != file.ReadArray<u32>(&magic, 1))
         return FileType::Error;
@@ -240,26 +244,41 @@ ResultStatus AppLoader_NCCH::LoadSectionExeFS(const char* name, std::vector<u8>&
 }
 
 ResultStatus AppLoader_NCCH::LoadExeFS() {
+   bool is_cia = false;
+    u32 tempmagic;
     if (is_exefs_loaded)
         return ResultStatus::Success;
 
     if (!file.IsOpen())
         return ResultStatus::Error;
-
+    file.Seek(0, SEEK_SET);
+    file.ReadBytes(&tempmagic,4);
+    if(0x2020 == tempmagic)
+    {
+      is_cia = true;
+    }
     // Reset read pointer in case this file has been read before.
     file.Seek(0, SEEK_SET);
+if(!is_cia)
+{
+  if (file.ReadBytes(&ncch_header, sizeof(NCCH_Header)) != sizeof(NCCH_Header))
+    return ResultStatus::Error;
 
-    if (file.ReadBytes(&ncch_header, sizeof(NCCH_Header)) != sizeof(NCCH_Header))
-        return ResultStatus::Error;
-
-    // Skip NCSD header and load first NCCH (NCSD is just a container of NCCH files)...
-    if (MakeMagic('N', 'C', 'S', 'D') == ncch_header.magic) {
-        LOG_DEBUG(Loader, "Only loading the first (bootable) NCCH within the NCSD file!");
-        ncch_offset = 0x4000;
-        file.Seek(ncch_offset, SEEK_SET);
-        file.ReadBytes(&ncch_header, sizeof(NCCH_Header));
-    }
-
+  // Skip NCSD header and load first NCCH (NCSD is just a container of NCCH files)...
+  if (MakeMagic('N', 'C', 'S', 'D') == ncch_header.magic) {
+    LOG_DEBUG(Loader, "Only loading the first (bootable) NCCH within the NCSD file!");
+    ncch_offset = 0x4000;
+    file.Seek(ncch_offset, SEEK_SET);
+    file.ReadBytes(&ncch_header, sizeof(NCCH_Header));
+  }
+} else {
+  cia_context ctx;
+  ReadCiaFile(ctx);
+    LOG_DEBUG(Loader, "Attempting to load CIA contents hold onto your hats");
+    ncch_offset = ctx.offsetcontent;
+    file.Seek(ncch_offset, SEEK_SET);
+    file.ReadBytes(&ncch_header, sizeof(NCCH_Header));
+}
     // Verify we are loading the correct file type...
     if (MakeMagic('N', 'C', 'C', 'H') != ncch_header.magic)
         return ResultStatus::ErrorInvalidFormat;
@@ -410,5 +429,31 @@ ResultStatus AppLoader_NCCH::ReadRomFS(std::shared_ptr<FileUtil::IOFile>& romfs_
     LOG_DEBUG(Loader, "NCCH has no RomFS");
     return ResultStatus::ErrorNotUsed;
 }
+
+u32 align(u32 offset, u32 alignment) {
+  u32 mask = ~(alignment - 1);
+
+  return (offset + (alignment - 1)) & mask;
+}
+void AppLoader_NCCH::ReadCiaFile(cia_context& returnme) {
+  // Reset read pointer in case this file has been read before.
+  file.Seek(0, SEEK_SET);
+  cia_context* ctx = new cia_context;
+  memset(ctx, 0, sizeof(cia_context));
+
+  file.ReadBytes(&ctx->header, sizeof(CIA_Header));
+
+  ctx->sizeheader = ctx->header.headersize;
+  ctx->sizecert = ctx->header.certsize;
+  ctx->sizetik = ctx->header.ticketsize;
+  ctx->sizetmd = ctx->header.tmdsize;
+  ctx->sizecontent = ctx->header.contentsize;
+  ctx->sizemeta = ctx->header.metasize;
+  ctx->offsetcerts = align(ctx->sizeheader, 64);
+  ctx->offsettik = align(ctx->offsetcerts + ctx->sizecert, 64);
+  ctx->offsettmd = align(ctx->offsettik + ctx->sizetik, 64);
+  ctx->offsetcontent = align(ctx->offsettmd + ctx->sizetmd, 64);
+  returnme = *ctx;
+};
 
 } // namespace Loader
