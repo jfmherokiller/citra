@@ -159,7 +159,7 @@ static_assert(sizeof(ExHeader_Header) == 0x800, "ExHeader structure size is wron
 namespace Loader {
 
 /// Loads an NCCH file (e.g. from a CCI, or the first NCCH in a CXI)
-class AppLoader_NCCH final : public AppLoader {
+class AppLoader_NCCH : public AppLoader {
 public:
     AppLoader_NCCH(FileUtil::IOFile&& file, const std::string& filepath)
         : AppLoader(std::move(file)), filepath(filepath) {}
@@ -223,12 +223,6 @@ private:
      */
     ResultStatus LoadExec();
 
-    /**
-     * Ensure ExeFS is loaded and ready for reading sections
-     * @return ResultStatus result of function
-     */
-    ResultStatus LoadExeFS();
-
     /// Reads the region lockout info in the SMDH and send it to CFG service
     void ParseRegionLockoutInfo();
 
@@ -242,14 +236,21 @@ private:
     u32 core_version = 0;
     u8 priority = 0;
     u8 resource_limit_category = 0;
-    u32 ncch_offset = 0; // Offset to NCCH header, can be 0 or after NCSD header
+
     u32 exefs_offset = 0;
 
-    NCCH_Header ncch_header;
     ExeFs_Header exefs_header;
     ExHeader_Header exheader_header;
 
+protected:
     std::string filepath;
+    u32 ncch_offset = 0; ///< Offset to NCCH header, can be 0 or an offset inside the file
+    NCCH_Header ncch_header;
+    /**
+     * Ensure ExeFS is loaded and ready for reading sections
+     * @return ResultStatus result of function
+     */
+    virtual ResultStatus LoadExeFS();
 };
 
 } // namespace Loader
