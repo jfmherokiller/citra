@@ -741,6 +741,12 @@ int main(int argc, char* argv[]) {
     // generating shaders
     setlocale(LC_ALL, "C");
 
+    // setup translatior
+    QTranslator translator;
+    if(translator.load(QString::fromStdString(Settings::values.ui_language_path)))
+    {
+        app.installTranslator(&translator);
+    }
     GMainWindow main_window;
     // After settings have been loaded by GMainWindow, apply the filter
     log_filter.ParseFilterString(Settings::values.log_filter);

@@ -5,6 +5,7 @@
 #pragma once
 
 #include <memory>
+#include <QTranslator>
 #include <QWidget>
 
 namespace Ui {
@@ -25,4 +26,5 @@ private:
 
 private:
     std::unique_ptr<Ui::ConfigureGeneral> ui;
+
 };

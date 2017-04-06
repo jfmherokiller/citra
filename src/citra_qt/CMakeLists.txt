@@ -80,7 +80,6 @@ set(UIS
             hotkeys.ui
             main.ui
             )
-
 create_directory_groups(${SRCS} ${HEADERS} ${UIS})
 
 if (Qt5_FOUND)
@@ -90,6 +89,7 @@ else()
 endif()
 
 if (APPLE)
+
     set(MACOSX_ICON "../../dist/citra.icns")
     set_source_files_properties(${MACOSX_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     add_executable(citra-qt MACOSX_BUNDLE ${SRCS} ${HEADERS} ${UI_HDRS} ${MACOSX_ICON})

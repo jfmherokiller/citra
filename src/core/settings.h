@@ -126,6 +126,8 @@ struct Values {
     // Debugging
     bool use_gdbstub;
     u16 gdbstub_port;
+  //UI Language file (qm) path
+  std::string ui_language_path;
 } extern values;
 
 // a special value for Values::region_value indicating that citra will automatically select a region
