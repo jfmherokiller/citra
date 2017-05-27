@@ -174,6 +174,7 @@ set(SRCS
             memory.cpp
             perf_stats.cpp
             settings.cpp
+            loader/ncsd.cpp
             )
 
 set(HEADERS
@@ -357,6 +358,7 @@ set(HEADERS
             loader/elf.h
             loader/loader.h
             loader/ncch.h
+            loader/ncsd.h
             loader/smdh.h
             tracer/recorder.h
             tracer/citrace.h
