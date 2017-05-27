@@ -9,6 +9,34 @@
 #include "common/common_types.h"
 #include "common/swap.h"
 #include "core/loader/loader.h"
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// CIA header
+struct CIA_Header {
+  u32_le headersize;
+  u8 type[2];
+  u8 version[2];
+  u32_le certsize;
+  u32_le ticketsize;
+  u32_le tmdsize;
+  u32_le metasize;
+  u64_le contentsize;
+  u8 contentindex[0x2000];
+};
+
+struct cia_context {
+  CIA_Header header;
+  u32 sizeheader;
+  u32 sizecert;
+  u32 sizetik;
+  u32 sizetmd;
+  u64 sizecontent;
+  u32 sizemeta;
+
+  u32 offsetcerts;
+  u32 offsettik;
+  u32 offsettmd;
+  u32 offsetcontent;
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// NCCH header (Note: "NCCH" appears to be a publicly unknown acronym)
@@ -157,7 +185,7 @@ static_assert(sizeof(ExHeader_Header) == 0x800, "ExHeader structure size is wron
 // Loader namespace
 
 namespace Loader {
-
+u32 align(u32 offset, u32 alignment);
 /// Loads an NCCH file (e.g. from a CCI, or the first NCCH in a CXI)
 class AppLoader_NCCH final : public AppLoader {
 public:
@@ -250,6 +278,8 @@ private:
     ExHeader_Header exheader_header;
 
     std::string filepath;
+  void ReadCiaFile(cia_context &returnme);
+
 };
 
 } // namespace Loader

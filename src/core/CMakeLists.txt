@@ -173,8 +173,7 @@ set(SRCS
             tracer/recorder.cpp
             memory.cpp
             perf_stats.cpp
-            settings.cpp
-            )
+            settings.cpp)
 
 set(HEADERS
             arm/arm_interface.h
