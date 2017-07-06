@@ -161,9 +161,10 @@ namespace Loader {
 /// Loads an NCCH file (e.g. from a CCI, or the first NCCH in a CXI)
 class AppLoader_NCCH final : public AppLoader {
 public:
+    AppLoader_NCCH(FileUtil::IOFile&& file, const std::string& filepath, u32 ncch_offset)
+        : AppLoader(std::move(file)), filepath(filepath), ncch_offset(ncch_offset) {}
     AppLoader_NCCH(FileUtil::IOFile&& file, const std::string& filepath)
-        : AppLoader(std::move(file)), filepath(filepath) {}
-
+        : AppLoader(std::move(file)), filepath(filepath), ncch_offset(0) {}
     /**
      * Returns the type of the file
      * @param file FileUtil::IOFile open file
@@ -218,16 +219,16 @@ private:
     ResultStatus LoadSectionExeFS(const char* name, std::vector<u8>& buffer);
 
     /**
-     * Loads .code section into memory for booting
-     * @return ResultStatus result of function
-     */
-    ResultStatus LoadExec();
-
-    /**
      * Ensure ExeFS is loaded and ready for reading sections
      * @return ResultStatus result of function
      */
     ResultStatus LoadExeFS();
+
+    /**
+     * Loads .code section into memory for booting
+     * @return ResultStatus result of function
+     */
+    ResultStatus LoadExec();
 
     /// Reads the region lockout info in the SMDH and send it to CFG service
     void ParseRegionLockoutInfo();
@@ -242,14 +243,13 @@ private:
     u32 core_version = 0;
     u8 priority = 0;
     u8 resource_limit_category = 0;
-    u32 ncch_offset = 0; // Offset to NCCH header, can be 0 or after NCSD header
+    u32 ncch_offset = 0; ///< Offset to NCCH header, can be 0 or a location lower in the file
+    std::string filepath;
     u32 exefs_offset = 0;
 
     NCCH_Header ncch_header;
     ExeFs_Header exefs_header;
     ExHeader_Header exheader_header;
-
-    std::string filepath;
 };
 
 } // namespace Loader

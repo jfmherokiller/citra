@@ -109,11 +109,8 @@ static bool LZSS_Decompress(const u8* compressed, u32 compressed_size, u8* decom
 FileType AppLoader_NCCH::IdentifyType(FileUtil::IOFile& file) {
     u32 magic;
     file.Seek(0x100, SEEK_SET);
-    if (1 != file.ReadArray<u32>(&magic, 1))
+    if (file.ReadArray<u32>(&magic, 1) != 1)
         return FileType::Error;
-
-    if (MakeMagic('N', 'C', 'S', 'D') == magic)
-        return FileType::CCI;
 
     if (MakeMagic('N', 'C', 'C', 'H') == magic)
         return FileType::CXI;
@@ -251,22 +248,13 @@ ResultStatus AppLoader_NCCH::LoadExeFS() {
     if (!file.IsOpen())
         return ResultStatus::Error;
 
-    // Reset read pointer in case this file has been read before.
-    file.Seek(0, SEEK_SET);
+    file.Seek(ncch_offset, SEEK_SET);
 
     if (file.ReadBytes(&ncch_header, sizeof(NCCH_Header)) != sizeof(NCCH_Header))
         return ResultStatus::Error;
 
-    // Skip NCSD header and load first NCCH (NCSD is just a container of NCCH files)...
-    if (MakeMagic('N', 'C', 'S', 'D') == ncch_header.magic) {
-        LOG_DEBUG(Loader, "Only loading the first (bootable) NCCH within the NCSD file!");
-        ncch_offset = 0x4000;
-        file.Seek(ncch_offset, SEEK_SET);
-        file.ReadBytes(&ncch_header, sizeof(NCCH_Header));
-    }
-
     // Verify we are loading the correct file type...
-    if (MakeMagic('N', 'C', 'C', 'H') != ncch_header.magic)
+    if (ncch_header.magic != MakeMagic('N', 'C', 'C', 'H'))
         return ResultStatus::ErrorInvalidFormat;
 
     // Read ExHeader...
